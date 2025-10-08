@@ -1,56 +1,36 @@
-<div align="center">
-
-👨‍🎓 Student Service
+📚 Student Service
 RESTful Microservice for Student Management
+Spring Boot Spring Cloud Java MySQL License
+
 Features • Architecture • Quick Start • API Documentation • Database
 
 </div>
-
 📖 Overview
-The Student Service is a robust microservice primarily responsible for managing student registration, profiles, and academic records within the Student Management System. Built with Spring Boot and Spring Cloud, it provides comprehensive CRUD operations and seamless integration with other microservices.
+The Student Service is a robust microservice responsible for managing student-related operations in the Student Management System. Built with Spring Boot and Spring Cloud, it provides comprehensive CRUD operations, student profile management, and seamless integration with other microservices.
 
 Key Responsibilities
-👤 Student Management - Create, read, update, and delete student profiles
-
-📚 Academic Tracking - Track student's major, department, and enrollment status
-
-✅ Validation Service - Verify student existence and status for enrollment processes
-
-🔍 Student Discovery - Search and filter students by ID, name, or department
-
-🔗 Service Integration - Provide data to Course Service for enrollment validation
-
+📋 Student Management - Create, read, update, and delete student profiles
+👥 Enrollment Tracking - Manage student enrollments and academic history
+🔍 Student Search - Search and filter students by various criteria
+📊 Student Analytics - Track student statistics and status
+🔗 Service Integration - Communicate with Course Service for enrollment validation
 ✨ Features
-<table>
-<tr>
-<td>
-
+<table> <tr> <td>
 ✅ RESTful API Design
-
 ✅ Service Discovery (Eureka)
-
 ✅ Centralized Configuration
-
 ✅ Database Integration (MySQL)
-
-</td>
-<td>
-
+</td> <td>
 ✅ Input Validation
-
 ✅ Exception Handling
-
 ✅ API Documentation (Swagger)
-
 ✅ Health Monitoring
-
-</td>
-</tr>
-</table>
-
+</td> </tr> </table>
 🏗️ Architecture
-Code snippet
+mermaid
 
+Run
+Copy code
 graph TB
     A[👥 Client] -->|HTTP Request| B[🌐 API Gateway :8080]
     B -->|Route: /students/**| C[👨‍🎓 Student Service :8082]
@@ -59,57 +39,94 @@ graph TB
     C -->|Query/Update| F[(MySQL Database)]
     C -->|REST Call| G[📚 Course Service]
     
-    style C fill:#4CAF50,stroke:#2E7D32,stroke-width:3px,color:#fff
-    style F fill:#2196F3,stroke:#1565C0,stroke-width:2px,color:#fff
+    style C fill:#2196F3,stroke:#1565C0,stroke-width:3px,color:#fff
+    style F fill:#4CAF50,stroke:#2E7D32,stroke-width:2px,color:#fff
 Microservices Ecosystem
-Service	Port	Description
-Student Service	8082	Student management microservice
-API Gateway	8080	Routes requests to Student Service
-Eureka Server	8761	Service registry and discovery
-Config Server	8888	Centralized configuration
-Course Service	8083	Course management (consumes student validation)
+Service
 
-Export to Sheets
+Port
+
+Description
+
+Student Service
+
+8082
+
+Student management microservice
+
+API Gateway
+
+8080
+
+Routes requests to Student Service
+
+Eureka Server
+
+8761
+
+Service registry and discovery
+
+Config Server
+
+8888
+
+Centralized configuration
+
+Course Service
+
+8083
+
+Course management (for enrollment validation)
+
 🚀 Quick Start
 Prerequisites
-Bash
+bash
 
+Run
+Copy code
 ☑ Java 17 or higher
 ☑ Maven 3.8+
 ☑ MySQL 8.x
 ☑ Running Eureka Server (localhost:8761)
 ☑ Running Config Server (localhost:8888)
 Database Setup
-SQL
+sql
 
+Run
+Copy code
 -- Create database
-CREATE DATABASE student_management_db;
+CREATE DATABASE student_db;
 
 -- Use database
-USE student_management_db;
+USE student_db;
 
 -- Create students table
 CREATE TABLE students (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    student_id VARCHAR(20) UNIQUE NOT NULL, -- The public ID used for enrollment
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
+    student_id VARCHAR(20) UNIQUE NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
-    department VARCHAR(50),
-    major VARCHAR(50),
+    phone VARCHAR(20),
+    date_of_birth DATE,
     enrollment_date DATE NOT NULL,
-    status VARCHAR(20) DEFAULT 'Active', -- Active, Inactive, Graduated
+    department VARCHAR(50),
+    academic_year VARCHAR(10),
+    gpa DECIMAL(3,2) DEFAULT 0.00,
+    is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- Create indexes
 CREATE INDEX idx_student_id ON students(student_id);
+CREATE INDEX idx_email ON students(email);
 CREATE INDEX idx_department ON students(department);
-CREATE INDEX idx_status ON students(status);
 Installation
-Bash
+bash
 
+Run
+Copy code
 # Clone the repository
 git clone https://github.com/waseem-sk-dev/student-service.git
 cd student-service
@@ -120,21 +137,25 @@ mvn clean install
 # Run the application
 mvn spring-boot:run
 Docker Deployment
-Bash
+bash
 
+Run
+Copy code
 # Build Docker image
 docker build -t student-service:latest .
 
 # Run container
 docker run -p 8082:8082 \
-  -e SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/student_management_db \
+  -e SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/student_db \
   -e SPRING_DATASOURCE_USERNAME=root \
   -e SPRING_DATASOURCE_PASSWORD=password \
   student-service:latest
 ⚙️ Configuration
 application.yml
-YAML
+yaml
 
+Run
+Copy code
 # ============================
 # Server Configuration
 # ============================
@@ -152,7 +173,7 @@ spring:
   # Database Configuration
   # ============================
   datasource:
-    url: jdbc:mysql://localhost:3306/student_management_db
+    url: jdbc:mysql://localhost:3306/student_db
     username: root
     password: ${DB_PASSWORD:password}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -202,170 +223,333 @@ management:
 # ============================
 logging:
   level:
-    com.student.management: DEBUG
+    com.student.service: DEBUG
     org.springframework.web: INFO
     org.hibernate.SQL: DEBUG
+Environment Variables
+bash
+
+Run
+Copy code
+# Database
+export DB_HOST=localhost
+export DB_PORT=3306
+export DB_NAME=student_db
+export DB_USERNAME=root
+export DB_PASSWORD=your_password
+
+# Service Configuration
+export SERVER_PORT=8082
+export EUREKA_URI=http://localhost:8761/eureka/
+export CONFIG_SERVER_URI=http://localhost:8888
 📊 Database Schema
 Student Entity
-SQL
+sql
 
+Run
+Copy code
 +-------------------+---------------+------+-----+-------------------+
 | Field             | Type          | Null | Key | Default           |
 +-------------------+---------------+------+-----+-------------------+
 | id                | bigint        | NO   | PRI | AUTO_INCREMENT    |
 | student_id        | varchar(20)   | NO   | UNI |                   |
-| first_name        | varchar(100)  | NO   |     |                   |
-| last_name         | varchar(100)  | NO   |     |                   |
+| first_name        | varchar(50)   | NO   |     |                   |
+| last_name         | varchar(50)   | NO   |     |                   |
 | email             | varchar(100)  | NO   | UNI |                   |
+| phone             | varchar(20)   | YES  |     |                   |
+| date_of_birth     | date          | YES  |     |                   |
+| enrollment_date   | date          | NO   |     |                   |
 | department        | varchar(50)   | YES  | MUL |                   |
-| major             | varchar(50)   | YES  |     |                   |
-| enrollment_date   | date          | NO   |     | CURRENT_DATE      |
-| status            | varchar(20)   | YES  | MUL | Active            |
+| academic_year     | varchar(10)   | YES  |     |                   |
+| gpa               | decimal(3,2)  | YES  |     | 0.00              |
+| is_active         | boolean       | YES  |     | TRUE              |
 | created_at        | timestamp     | YES  |     | CURRENT_TIMESTAMP |
 | updated_at        | timestamp     | YES  |     | CURRENT_TIMESTAMP |
 +-------------------+---------------+------+-----+-------------------+
 Sample Data
-SQL
+sql
 
-INSERT INTO students (student_id, first_name, last_name, email, department, major, enrollment_date, status)
+Run
+Copy code
+INSERT INTO students (student_id, first_name, last_name, email, phone, date_of_birth, enrollment_date, department, academic_year, gpa)
 VALUES 
-('101', 'Alice', 'Smith', 'alice.s@university.edu', 'Computer Science', 'Software Engineering', '2023-09-01', 'Active'),
-('102', 'Bob', 'Johnson', 'bob.j@university.edu', 'Mathematics', 'Applied Math', '2023-09-01', 'Active'),
-('103', 'Charlie', 'Brown', 'charlie.b@university.edu', 'English', 'Creative Writing', '2023-01-15', 'Active');
+('STU001', 'John', 'Doe', 'john.doe@example.com', '123-456-7890', '2000-01-15', '2023-09-01', 'Computer Science', '2024-2025', 3.75),
+('STU002', 'Jane', 'Smith', 'jane.smith@example.com', '098-765-4321', '2001-05-20', '2023-09-01', 'Mathematics', '2024-2025', 3.90),
+('STU003', 'Mike', 'Johnson', 'mike.johnson@example.com', '555-123-4567', '1999-11-10', '2023-09-01', 'English', '2024-2025', 3.20),
+('STU004', 'Emily', 'Davis', 'emily.davis@example.com', '777-888-9999', '2002-03-05', '2024-01-15', 'Physics', '2024-2025', 3.85);
 📡 API Documentation
 Base URL
+
+Run
+Copy code
 http://localhost:8082/students
 Endpoints
 1. Get All Students
-HTTP
+http
 
+Run
+Copy code
 GET /students/all
-Response: (Abridged)
+Response:
 
-JSON
-
+json
+18 lines
+Copy code
+Download code
+Click to expand
 [
-  {
-    "id": 1,
-    "studentId": "101",
-    "firstName": "Alice",
-    "lastName": "Smith",
-    "email": "alice.s@university.edu",
-    "department": "Computer Science",
-    "major": "Software Engineering",
-    "status": "Active"
-  }
-]
-2. Get Student by Internal ID
-HTTP
+{
+...
+2. Get Student by ID
+http
 
+Run
+Copy code
 GET /students/{id}
 Example:
 
-Bash
+bash
 
+Run
+Copy code
 curl http://localhost:8082/students/1
-3. Get Student by Student ID (For Enrollment Validation)
-HTTP
+Response:
 
-GET /students/sid/{studentId}
+json
+14 lines
+Copy code
+Download code
+Click to expand
+{
+"id": 1,
+...
+3. Get Student by Student ID
+http
+
+Run
+Copy code
+GET /students/studentId/{studentId}
 Example:
 
-Bash
+bash
 
-curl http://localhost:8082/students/sid/101
+Run
+Copy code
+curl http://localhost:8082/students/studentId/STU001
 4. Create New Student
-HTTP
+http
 
+Run
+Copy code
 POST /students
 Content-Type: application/json
 Request Body:
 
-JSON
-
+json
+12 lines
+Copy code
+Download code
+Click to expand
 {
-  "studentId": "104",
-  "firstName": "Diana",
-  "lastName": "Prince",
-  "email": "diana.p@university.edu",
-  "department": "Physics",
-  "major": "Astrophysics",
-  "enrollmentDate": "2024-09-01"
-}
-5. Update Student
-HTTP
+"studentId": "STU005",
+...
+Example:
 
+bash
+
+Run
+Copy code
+curl -X POST http://localhost:8082/students \
+  -H "Content-Type: application/json" \
+  -d '{
+    "studentId": "STU005",
+    "firstName": "Alice",
+    "lastName": "Wilson",
+    "email": "alice.wilson@example.com",
+    "enrollmentDate": "2024-09-01",
+    "department": "Computer Science",
+    "academicYear": "2024-2025"
+  }'
+Response: 201 Created
+
+json
+10 lines
+Copy code
+Download code
+Click to expand
+{
+"id": 5,
+...
+5. Update Student
+http
+
+Run
+Copy code
 PUT /students/{id}
 Content-Type: application/json
-Request Body: (Partial update)
+Request Body:
 
-JSON
-
+json
+7 lines
+Copy code
+Download code
+Click to expand
 {
-  "major": "Theoretical Physics",
-  "status": "Active"
-}
-6. Delete Student
-HTTP
+"firstName": "Alicia",
+...
+Example:
 
+bash
+
+Run
+Copy code
+curl -X PUT http://localhost:8082/students/5 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "Alicia",
+    "phone": "444-555-6666",
+    "gpa": 3.50
+  }'
+Response: 200 OK
+
+6. Delete Student
+http
+
+Run
+Copy code
 DELETE /students/{id}
+Example:
+
+bash
+
+Run
+Copy code
+curl -X DELETE http://localhost:8082/students/5
 Response: 204 No Content
 
 7. Get Students by Department
-HTTP
+http
 
+Run
+Copy code
 GET /students/department/{department}
 Example:
 
-Bash
+bash
 
+Run
+Copy code
 curl http://localhost:8082/students/department/Computer%20Science
-8. Check Student Status
-HTTP
+8. Get Students by Academic Year
+http
 
-GET /students/sid/{studentId}/status
+Run
+Copy code
+GET /students/academicYear/{academicYear}
+Example:
+
+bash
+
+Run
+Copy code
+curl http://localhost:8082/students/academicYear/2024-2025
+9. Get Active Students
+http
+
+Run
+Copy code
+GET /students/active
+Returns students where isActive = true
+
+10. Enroll Student in Course
+http
+
+Run
+Copy code
+POST /students/{studentId}/enroll/{courseId}
+Example:
+
+bash
+
+Run
+Copy code
+curl -X POST http://localhost:8082/students/STU001/enroll/1
 Response: 200 OK
 
-JSON
-
+json
+4 lines
+Copy code
+Download code
+Click to expand
 {
-  "studentId": "101",
-  "status": "Active"
-}
+"message": "Student STU001 enrolled in course 1",
+...
+11. Update Student GPA
+http
+
+Run
+Copy code
+PUT /students/{studentId}/gpa
+Content-Type: application/json
+Request Body:
+
+json
+3 lines
+Copy code
+Download code
+Click to expand
+{
+"newGpa": 3.80
+...
+Example:
+
+bash
+
+Run
+Copy code
+curl -X PUT http://localhost:8082/students/STU001/gpa \
+  -H "Content-Type: application/json" \
+  -d '{"newGpa": 3.80}'
 🧪 Testing
 Unit Tests
-Bash
+bash
 
+Run
+Copy code
 # Run unit tests
 mvn test
 
 # Run with coverage
 mvn test jacoco:report
+Integration Tests
+bash
+
+Run
+Copy code
+# Run integration tests
+mvn verify
+
+# Run specific test class
+mvn test -Dtest=StudentServiceIntegrationTest
 API Testing with Postman
 Import the provided Postman collection:
 
-JSON
-
+json
+15 lines
+Copy code
+Download code
+Click to expand
 {
-  "info": {
-    "name": "Student Service API",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "item": [
-    {
-      "name": "Get All Students",
-      "request": {
-        "method": "GET",
-        "url": "http://localhost:8082/students/all"
-      }
-    }
-  ]
-}
+"info": {
+...
 📦 Project Structure
+
+Run
+Copy code
 student-service/
 ├── 📂 src/
 │   ├── 📂 main/
-│   │   ├── 📂 java/com/student/management/
+│   │   ├── 📂 java/com/student/service/
 │   │   │   ├── StudentServiceApplication.java
 │   │   │   ├── 📂 controller/
 │   │   │   │   └── StudentController.java
@@ -381,38 +565,45 @@ student-service/
 │   │   │   │   └── StudentResponseDto.java
 │   │   │   ├── 📂 exception/
 │   │   │   │   ├── StudentNotFoundException.java
+│   │   │   │   ├── StudentAlreadyExistsException.java
 │   │   │   │   └── GlobalExceptionHandler.java
 │   │   │   └── 📂 config/
-│   │   │       └── SwaggerConfig.java
+│   │   │       ├── SwaggerConfig.java
+│   │   │       └── WebConfig.java
 │   │   └── 📂 resources/
 │   │       ├── application.yml
 │   │       ├── bootstrap.yml
 │   │       └── data.sql
 │   └── 📂 test/
-│       └── 📂 java/com/student/management/
+│       └── 📂 java/com/student/service/
 │           ├── StudentServiceTest.java
-│           └── StudentControllerTest.java
+│           ├── StudentControllerTest.java
+│           └── StudentRepositoryTest.java
 ├── 📄 pom.xml
-└── 📄 Dockerfile
-...
+├── 📄 Dockerfile
+├── 📄 docker-compose.yml
+├── 📄 .gitignore
+└── 📄 README.md
 🐳 Docker Compose
-YAML
+yaml
 
+Run
+Copy code
 version: '3.8'
 
 services:
-  mysql-student:
+  mysql:
     image: mysql:8.0
     container_name: student-service-db
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: student_management_db
+      MYSQL_DATABASE: student_db
       MYSQL_USER: studentuser
       MYSQL_PASSWORD: studentpass
     ports:
-      - "3306:3306" # Use default 3306 for student DB
+      - "3306:3306"
     volumes:
-      - student-mysql-data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
     networks:
       - student-network
 
@@ -423,83 +614,4 @@ services:
     ports:
       - "8082:8082"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-student:3306/student_management_db
-      - SPRING_DATASOURCE_USERNAME=studentuser
-      - SPRING_DATASOURCE_PASSWORD=studentpass
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
-    depends_on:
-      - mysql-student
-    networks:
-      - student-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-volumes:
-  student-mysql-data:
-
-networks:
-  student-network:
-    driver: bridge
-🔒 Security
-Input Validation
-Java
-
-@NotBlank(message = "Student ID is required")
-@Size(min = 3, max = 20, message = "Student ID must be between 3 and 20 characters")
-private String studentId;
-
-@NotBlank(message = "First name is required")
-private String firstName;
-
-@Email(message = "Email must be valid")
-private String email;
-
-@PastOrPresent(message = "Enrollment date cannot be in the future")
-private LocalDate enrollmentDate;
-Exception Handling
-Java
-
-@ExceptionHandler(StudentNotFoundException.class)
-public ResponseEntity<ErrorResponse> handleStudentNotFound(StudentNotFoundException ex) {
-    ErrorResponse error = new ErrorResponse(
-        HttpStatus.NOT_FOUND.value(),
-        ex.getMessage(),
-        LocalDateTime.now()
-    );
-    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-}
-🛡️ Best Practices & Additional Resources
-(Content for Best Practices, Monitoring, Troubleshooting, Additional Resources, License, and Author sections would be identical or structurally similar to the Course Service README, with name/path changes where necessary.)
-
-👨‍💻 Author
-<div align="center">
-
-Waseem Shaikh
-Backend Developer | Java • Spring Boot • Microservices
-
-</div>
-
-<div align="center">
-
-⭐ Star this repository if you find it helpful!
-
-Made with ❤️ by Waseem Shaikh
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-Tools
-
+      - SPRING
