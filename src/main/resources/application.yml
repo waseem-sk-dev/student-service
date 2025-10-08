@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: student-service
+  config:
+    import: optional:configserver:http://localhost:8888
+  cloud:
+    config:
+      fail-fast: true
+      retry:
+        max-attempts: 5
+        initial-interval: 1000        # 1 second in milliseconds
+        multiplier: 1.1               # Exponential backoff multiplier
+        max-interval: 2000            # 2 seconds max in milliseconds
+      request-read-timeout: 5000      # 5 seconds in milliseconds
+      request-connect-timeout: 3000   # 3 seconds in milliseconds
