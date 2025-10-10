@@ -1032,3 +1032,54 @@ public class StudentMetricsService {
 5. **Input Validation**: Bean Validation (JSR-380)
 6. **Logging**: Structured logging with correlation IDs
 7. **Transaction Management
+---
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. 🍴 Fork the repository
+2. 🌿 Create a feature branch (`git checkout -b feature/student-enhancement`)
+3. 💾 Commit your changes (`git commit -m 'Add peer replication support'`)
+4. 📤 Push to the branch (`git push origin feature/student-enhancement`)
+5. 🔃 Open a Pull Request
+
+Please ensure your code follows Spring Boot best practices and includes appropriate tests.
+
+---
+
+## 📝 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👨‍💻 Author
+
+<div align="center">
+
+### Waseem Shaikh
+
+**Backend Developer** | Java • Spring Boot • Microservices
+
+[![GitHub](https://img.shields.io/badge/GitHub-waseem--sk--dev-181717?style=for-the-badge&logo=github)](https://github.com/waseem-sk-dev)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/waseemyousuf/)
+[![Email](https://img.shields.io/badge/Email-Contact-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:waseemshaikh.dev@gmail.com)
+
+</div>
+
+---
+
+## 🌟 Acknowledgments
+
+- Spring Cloud team for seamless integration
+- The open-source community for continuous improvements
+
+---
+
+<div align="center">
+
+**⭐ Star this repository if you find it helpful!**
+
+Made with ❤️ by [Waseem Shaikh](https://github.com/waseem-sk-dev)
+
+</div>
